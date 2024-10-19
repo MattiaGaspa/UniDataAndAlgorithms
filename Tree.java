@@ -28,24 +28,27 @@ public interface Tree<E> {
      * @return Il numero dei figli
      */
     int numChildren(Position<E> p);
-    /**
-     * 
+    /** Controlla se il nodo p è interno
+     * @param p Il nodo che si vuole controllare
+     * @return true se il nodo è interno, altrimenti false
      */
     boolean isInternal(Position<E> p);
-    /**
-     * 
+    /** Controlla se il nodo p è esterno
+     * @param p Il nodo che si vuole controllare
+     * @return true se il nodo è esterno, altrimenti false
      */
     boolean isExternal(Position<E> p);
-    /**
-     * 
+    /** Controlla se il nodo p è la radice dell'albero
+     * @param p Il nodo che si vuole controllare
+     * @return true se il nodo è radice, altrimenti false
      */
     boolean isRoot(Position<E> p);
-    /**
-     * 
+    /** Ritorna un iteratore per tutti gli elementi dell'albero
+     * @return Un iteratore a tutti gli elementi
      */
     Iterator<E> iterator();
-    /**
-     * 
+    /** Ritorna un iteratore per tutte le posizioni dell'albero
+     * @return Un iteratore a tutti le posizioni
      */
     Iterator<Position<E>> positions();
 }
