@@ -3,7 +3,7 @@ import interfaces.PriorityQueue;
 import interfaces.SkipList;
 
 /** Implementation of the interface PriorityQueue by using SkipList for this project. */
-public class SkipListPQ implements PriorityQueue<Integer, String>, SkipList<MyEntry> {
+public class SkipListPQ implements PriorityQueue<Integer, String> {
     /** Method to get queue size.
      * @return Queue size.
      */
@@ -21,6 +21,7 @@ public class SkipListPQ implements PriorityQueue<Integer, String>, SkipList<MyEn
      */
     @Override
     public int insert(Integer key, String value) {
+        this.size++;
         return 0;
     }
     /** Return the entry with the lowest key, without removing it.
@@ -35,6 +36,7 @@ public class SkipListPQ implements PriorityQueue<Integer, String>, SkipList<MyEn
      */
     @Override
     public MyEntry removeMin() {
+        this.size--;
         return null;
     }
 
@@ -42,39 +44,6 @@ public class SkipListPQ implements PriorityQueue<Integer, String>, SkipList<MyEn
     @Override
     public void print() {
 
-    }
-
-    /** Return the successor of the given position.
-     * @param p The position in the list.
-     * @return The successor of p or null if it's the right sentinel.
-     */
-    @Override
-    public Node<MyEntry> next(Node<MyEntry> p) {
-        return null;
-    }
-    /** Return the predecessor of the given position.
-     * @param p The position in the list.
-     * @return The predecessor of p or null if it's the right sentinel.
-     */
-    @Override
-    public Node<MyEntry> prev(Node<MyEntry> p) {
-        return null;
-    }
-    /** Return the position above of the given position.
-     * @param p The position in the list.
-     * @return The position above of p if it exists else null.
-     */
-    @Override
-    public Node<MyEntry> above(Node<MyEntry> p) {
-        return null;
-    }
-    /** Return the position below of the given position.
-     * @param p The position in the list.
-     * @return The position below of p if it exists else null.
-     */
-    @Override
-    public Node<MyEntry> below(Node<MyEntry> p) {
-        return null;
     }
 
     /** Variable used to store the size of the priority queue */
