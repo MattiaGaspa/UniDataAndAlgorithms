@@ -45,6 +45,15 @@ public class MySkipList implements SkipList<MyNode> {
         return p;
     }
 
+    /** Implementation of the algorithm SkipInsert, to insert a node in the Skip list.
+     * @param key The key to insert.
+     * @param value The value to insert.
+     * @return The highest position of the new entry tower.
+     */
+    public int skipInsert(Integer key, String value) {
+        return 0; // TODO with insertAfterAbove() and coinflip() (private method)
+    }
+
     /**
      * @param p The position in the list. 
      * @return The successor of p or null if it's the right sentinel.
