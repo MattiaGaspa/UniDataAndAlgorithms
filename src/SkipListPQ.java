@@ -1,8 +1,9 @@
+import interfaces.Node;
 import interfaces.PriorityQueue;
 import interfaces.SkipList;
 
 /** Implementation of the interface PriorityQueue by using SkipList for this project. */
-public class SkipListPQ implements PriorityQueue<Integer, String>, SkipList<MyNode> {
+public class SkipListPQ implements PriorityQueue<Integer, String>, SkipList<MyEntry> {
     /** Method to get queue size.
      * @return Queue size.
      */
@@ -48,7 +49,7 @@ public class SkipListPQ implements PriorityQueue<Integer, String>, SkipList<MyNo
      * @return The successor of p or null if it's the right sentinel.
      */
     @Override
-    public MyNode next(MyNode p) {
+    public Node<MyEntry> next(Node<MyEntry> p) {
         return null;
     }
     /** Return the predecessor of the given position.
@@ -56,7 +57,7 @@ public class SkipListPQ implements PriorityQueue<Integer, String>, SkipList<MyNo
      * @return The predecessor of p or null if it's the right sentinel.
      */
     @Override
-    public MyNode prev(MyNode p) {
+    public Node<MyEntry> prev(Node<MyEntry> p) {
         return null;
     }
     /** Return the position above of the given position.
@@ -64,7 +65,7 @@ public class SkipListPQ implements PriorityQueue<Integer, String>, SkipList<MyNo
      * @return The position above of p if it exists else null.
      */
     @Override
-    public MyNode above(MyNode p) {
+    public Node<MyEntry> above(Node<MyEntry> p) {
         return null;
     }
     /** Return the position below of the given position.
@@ -72,7 +73,7 @@ public class SkipListPQ implements PriorityQueue<Integer, String>, SkipList<MyNo
      * @return The position below of p if it exists else null.
      */
     @Override
-    public MyNode below(MyNode p) {
+    public Node<MyEntry> below(Node<MyEntry> p) {
         return null;
     }
 
