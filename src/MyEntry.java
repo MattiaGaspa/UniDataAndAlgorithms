@@ -14,12 +14,14 @@ public class MyEntry implements Entry<Integer, String> {
     /** Returns the key corresponding to this entry.
      * @return The key corresponding to this entry.
      */
+    @Override
     public Integer getKey() { return this.key; }
 
     /** Replaces the value corresponding to this entry with the specified value (optional operation).
      * @param value New value to be stored in this entry.
      * @return Old value corresponding to the entry.
      */
+    @Override
     public String setValue(String value) {
         String oldValue = this.value;
         this.value = value;
@@ -28,6 +30,7 @@ public class MyEntry implements Entry<Integer, String> {
     /** Returns the value corresponding to this entry.
      * @return The value corresponding to this entry.
      */
+    @Override
     public String getValue() { return this.value; }
 
     /** Variable used to store the key. */
