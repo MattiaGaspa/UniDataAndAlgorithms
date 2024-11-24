@@ -85,6 +85,9 @@ class MySkipList {
     private MyNode startPosition;
     private int size;
     private int height;
+    private int coinFlip() {
+        return new Random().nextInt(2);
+    }
     public MySkipList() {
         this.leftSentinel = new MyNode(null);
         this.rightSentinel = new MyNode(null);
@@ -107,7 +110,25 @@ class MySkipList {
         return p;
     }
     public int skipInsert(Integer key, String value) {
-        return 0; // TODO with insertAfterAbove() and coinflip() (private method)
+        MyNode p = skipSearch(key);
+        MyNode q = null;
+        int i = -1;
+        do {
+            i++;
+            if (i >= this.height) {
+                this.height++;
+                MyNode t = next(getStartPosition());
+                MyNode s = insertAfterAbove(null, null, t, getStartPosition(), null, null); // Correggi
+                insertAferAbove(key, value, s, t, null, null); // Correggi
+            }
+            q = insertAfterAbove(key, value, p, q, null, null); // Correggi
+            while (above(p) == null) {
+                p = prev(p);
+            }
+            p = above(p);
+        } while (coinFlip() == 1);
+        this.size++;
+        return 0; // Correggi. Deve ritornare un intero
     }
     public MyNode next(MyNode p) { return p.getNext(); }
     public MyNode prev(MyNode p) { return p.getPrev(); }
