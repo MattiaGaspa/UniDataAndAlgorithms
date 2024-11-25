@@ -44,6 +44,13 @@ class MyNode {
         setAbove(null);
         setBelow(null);
     }
+    public MyNode(MyEntry entry, MyNode next, MyNode prev, MyNode above, MyNode below) {
+        setElement(entry);
+        setNext(next);
+        setPrev(prev);
+        setAbove(above);
+        setBelow(below);
+    }
     public MyNode(Integer key, String value, MyNode next, MyNode prev, MyNode above, MyNode below) {
         setElement(new MyEntry(key, value));
         setNext(next);
@@ -118,10 +125,10 @@ class MySkipList {
             if (i >= this.height) {
                 this.height++;
                 MyNode t = next(getStartPosition());
-                MyNode s = insertAfterAbove(null, null, t, getStartPosition(), null, null); // Correggi
-                insertAferAbove(key, value, s, t, null, null); // Correggi
+                MyNode s = insertAfterAbove(null, null, null); // Correggi
+                insertAfterAbove(null, null, null); // Correggi
             }
-            q = insertAfterAbove(key, value, p, q, null, null); // Correggi
+            q = insertAfterAbove(null, null, null); // Correggi
             while (above(p) == null) {
                 p = prev(p);
             }
@@ -129,6 +136,12 @@ class MySkipList {
         } while (coinFlip() == 1);
         this.size++;
         return 0; // Correggi. Deve ritornare un intero
+    }
+    private MyNode insertAfterAbove(MyNode p, MyNode q, MyEntry e) {
+        MyNode r = new MyNode(e, null, p, null, q);
+        p.setNext(r);
+        q.setAbove(r);
+        return r;
     }
     public MyNode next(MyNode p) { return p.getNext(); }
     public MyNode prev(MyNode p) { return p.getPrev(); }
