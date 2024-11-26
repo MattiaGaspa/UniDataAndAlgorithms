@@ -5,8 +5,8 @@ import java.util.*;
 
 //Class my entry
 class MyEntry {
-    private Integer key;
-    private String value;
+    private final Integer key;
+    private final String value;
     public MyEntry(Integer key, String value) {
         this.key = key;
         this.value = value;
@@ -87,8 +87,8 @@ class MyNode {
 
 // Class my skip list
 class MySkipList {
-    static private MyEntry leftGuard = new MyEntry(Integer.MIN_VALUE, "leftGuard");
-    static private MyEntry rightGuard = new MyEntry(Integer.MAX_VALUE, "rightGuard");
+    final static private MyEntry leftGuard = new MyEntry(Integer.MIN_VALUE, "leftGuard");
+    final static private MyEntry rightGuard = new MyEntry(Integer.MAX_VALUE, "rightGuard");
     private MyNode startPosition;
     private int size;
     private int height;
@@ -116,8 +116,17 @@ class MySkipList {
         }
         return p;
     }
-    public int skipInsert(Integer key, String value) {
+    public int skipInsert(Integer key, String value) { // TODO Ricontrolla gli insert di insertAfterAbove quando si alza la torre di destra e sinistra. Non c'è un collegamento tra la nuova guardia di sinistra e la nuova guardia di destra
+        int traversedNodes = 0; // TODO Traverse nodes deve contare anche i nodi passati in skipSearch!!!!!!!!!!!
         MyNode p = skipSearch(key);
+        if ((int) p.getElement().getKey() == key) {
+            while (p == null) {
+                p = new MyNode(key, value, next(p), prev(p), above(p), below(p));
+                traversedNodes++;
+                p = above(p);
+            }
+            return traversedNodes-1; // -1 perché conterei il nodo p iniziale 2 volte.
+        }
         MyNode q = null;
         int i = -1;
         do {
@@ -135,13 +144,25 @@ class MySkipList {
             p = above(p);
         } while (coinFlip() == 1);
         this.size++;
-        return 0; // Correggi. Deve ritornare un intero
+        return traversedNodes;
     }
-    private MyNode insertAfterAbove(MyNode p, MyNode q, MyEntry e) {
+    private MyNode insertAfterAbove(MyNode p, MyNode q, MyEntry e) { // TODO p o q == null cosa faccio con i next e gli above????
         MyNode r = new MyNode(e, p.getNext(), p, q.getAbove(), q);
         p.setNext(r);
         q.setAbove(r);
         return r;
+    }
+    public MyEntry remove(Integer key) {
+        MyNode p = skipSearch(key);
+        if ((int) p.getElement().getKey() != key) {
+            return null;
+        }
+        MyEntry e = p.getElement();
+        while (p == null) {
+            prev(p).setNext(next(p));
+            p = above(p);
+        }
+        return e;
     }
     public MyNode next(MyNode p) { return p.getNext(); }
     public MyNode prev(MyNode p) { return p.getPrev(); }
@@ -151,18 +172,17 @@ class MySkipList {
 
 //Class SkipListPQ
 class SkipListPQ {
-
     private double alpha;
     private Random rand;
+    private MySkipList skipList;
+    private int size = 0;
 
     public SkipListPQ(double alpha) {
         this.alpha = alpha;
         this.rand = new Random();
     }
 
-    public int size() {
-        // TO BE COMPLETED
-    }
+    public int size() { return this.size; }
 
     public MyEntry min() {
         // TO BE COMPLETED
@@ -179,7 +199,7 @@ class SkipListPQ {
                 level += 1;
             }
         }
-        else{
+        else {
             while (key != 0 && key % 2 == 0){
                 key = key / 2;
                 level += 1;
@@ -196,7 +216,6 @@ class SkipListPQ {
         // TO BE COMPLETED
     }
 }
-
 //TestProgram
 
 public class TestProgram {
