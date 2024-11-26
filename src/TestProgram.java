@@ -87,8 +87,8 @@ class MyNode {
 
 // Class my skip list
 class MySkipList {
-    private MyNode leftSentinel;
-    private MyNode rightSentinel;
+    static private MyEntry leftGuard = new MyEntry(Integer.MIN_VALUE, "leftGuard");
+    static private MyEntry rightGuard = new MyEntry(Integer.MAX_VALUE, "rightGuard");
     private MyNode startPosition;
     private int size;
     private int height;
@@ -96,11 +96,11 @@ class MySkipList {
         return new Random().nextInt(2);
     }
     public MySkipList() {
-        this.leftSentinel = new MyNode(null);
-        this.rightSentinel = new MyNode(null);
-        this.leftSentinel.setNext(this.rightSentinel);
-        this.rightSentinel.setPrev(this.leftSentinel);
-        this.startPosition = this.leftSentinel;
+        MyNode leftSentinel = new MyNode(leftGuard);
+        MyNode rightSentinel = new MyNode(rightGuard);
+        leftSentinel.setNext(rightSentinel);
+        rightSentinel.setPrev(leftSentinel);
+        this.startPosition = leftSentinel;
     }
     public int size() { return this.size; }
     public int height() { return this.height; }
@@ -125,10 +125,10 @@ class MySkipList {
             if (i >= this.height) {
                 this.height++;
                 MyNode t = next(getStartPosition());
-                MyNode s = insertAfterAbove(null, null, null); // Correggi
-                insertAfterAbove(null, null, null); // Correggi
+                this.startPosition = insertAfterAbove(null, getStartPosition(), leftGuard); // Alzo la torre delle sentinelle di sinistra di 1
+                insertAfterAbove(getStartPosition(), t, rightGuard); // Alzo la torre delle sentinelle di destra di 1
             }
-            q = insertAfterAbove(null, null, null); // Correggi
+            q = insertAfterAbove(p, q, new MyEntry(key, value));
             while (above(p) == null) {
                 p = prev(p);
             }
@@ -138,7 +138,7 @@ class MySkipList {
         return 0; // Correggi. Deve ritornare un intero
     }
     private MyNode insertAfterAbove(MyNode p, MyNode q, MyEntry e) {
-        MyNode r = new MyNode(e, null, p, null, q);
+        MyNode r = new MyNode(e, p.getNext(), p, q.getAbove(), q);
         p.setNext(r);
         q.setAbove(r);
         return r;
