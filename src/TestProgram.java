@@ -1,4 +1,3 @@
-import javax.naming.directory.SearchResult;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -114,7 +113,7 @@ class MySkipList {
         this.startPosition = insertAfterAbove(null, getStartPosition(), leftGuard); // Alzo la torre delle sentinelle di sinistra di 1
         insertAfterAbove(getStartPosition(), t, rightGuard); // Alzo la torre delle sentinelle di destra di 1
     }
-    private MyNode insertAfterAbove(MyNode p, MyNode q, MyEntry e) {
+    public MyNode insertAfterAbove(MyNode p, MyNode q, MyEntry e) {
         MyNode next, above;
         if (p == null) {
             next = null;
@@ -217,16 +216,49 @@ class SkipListPQ {
     public SkipListPQ(double alpha) {
         this.alpha = alpha;
         this.rand = new Random();
+        this.skipList = new MySkipList();
     }
 
     public int size() { return this.size; }
 
     public MyEntry min() {
-        // TO BE COMPLETED
+        return minNode().getElement();
+    }
+    private MyNode minNode() {
+        MyNode p = skipList.getStartPosition();
+        while ((p.getNext() != null) && (p.getBelow() != null)) {
+            p = p.getBelow();
+        }
+        return p.getNext();
     }
 
     public int insert(int key, String value) {
-        // TO BE COMPLETED
+        MySkipList.SearchResult searchResult = skipList.skipSearchTraversedNodes(key);
+        int traversedNodes = searchResult.getTraversedNodes();
+        MyNode p = searchResult.getP();
+        /*
+        if ((int) p.getElement().getKey() == key) {
+            while (p == null) {
+                p = new MyNode(key, value, skipList.next(p), skipList.prev(p), skipList.above(p), skipList.below(p));
+                traversedNodes++;
+                p = skipList.above(p);
+            }
+            return traversedNodes - 1; // -1 perché conterei il nodo p iniziale 2 volte.
+        }
+        */
+
+        MyNode q = null;
+        int level = generateEll(this.alpha, key);
+        for (int i = 0; i <= level; i++) {
+            if (i >= skipList.height()) { skipList.add_height(); }
+            q = skipList.insertAfterAbove(p, q, new MyEntry(key, value));
+            while (skipList.above(p) == null) {
+                p = skipList.prev(p);
+            }
+            p = skipList.above(p);
+        }
+        this.size++;
+        return traversedNodes - 1;
     }
 
     private int generateEll(double alpha_ , int key) {
@@ -246,38 +278,30 @@ class SkipListPQ {
     }
 
     public MyEntry removeMin() {
-        // TO BE COMPLETED
+        MyEntry e = min();
+        skipList.remove(e.getKey());
+        return e;
     }
 
     public void print() {
-        // TO BE COMPLETED
-    }
-
-    public int skipInsert(Integer key, String value) {
-        MySkipList.SearchResult searchResult = skipList.skipSearchTraversedNodes(key);
-        int traversedNodes = searchResult.getTraversedNodes();
-        MyNode p = searchResult.getP();
-        if ((int) p.getElement().getKey() == key) {
-            while (p == null) {
-                p = new MyNode(key, value, skipList.next(p), skipList.prev(p), skipList.above(p), skipList.below(p));
-                traversedNodes++;
-                p = skipList.above(p);
-            }
-            return traversedNodes - 1; // -1 perché conterei il nodo p iniziale 2 volte.
+        String output = "";
+        MyNode p = skipList.getStartPosition();
+        while (p.getBelow() != null) {
+            p = p.getBelow();
         }
-        MyNode q = null;
-        int i = -1;
-        do {
-            i++;
-            if (i >= this.height) { add_height(); }
-            q = insertAfterAbove(p, q, new MyEntry(key, value));
-            while (above(p) == null) {
-                p = prev(p);
+        while (!p.getNext().getElement().getValue().equals("rightGuard")) {
+            p = p.getNext();
+            output += p.getElement().toString();
+            MyNode q = p;
+            int i = 1;
+            while (q.getAbove() != null) {
+                q = q.getAbove();
+                i++;
             }
-            p = above(p);
-        } while (coinFlip() == 1);
-        this.size++;
-        return traversedNodes;
+            output += " " + i + ", ";
+        }
+        output += "\b\b";
+        System.out.println(output);
     }
 }
 //TestProgram
@@ -303,16 +327,16 @@ public class TestProgram {
 
                 switch (operation) {
                     case 0:
-                        // TO BE COMPLETED
+                        skipList.min();
                         break;
                     case 1:
-                        // TO BE COMPLETED
+                        skipList.removeMin();
                         break;
                     case 2:
-                        // TO BE COMPLETED
+                        int traversed = skipList.insert(Integer.parseInt(line[1]), line[2]);
                         break;
                     case 3:
-                        // TO BE COMPLETED
+                        skipList.print();
                         break;
                     default:
                         System.out.println("Invalid operation code");
