@@ -327,7 +327,7 @@ public class TestProgram {
 
                 switch (operation) {
                     case 0:
-                        skipList.min();
+                        System.out.println(skipList.min());
                         break;
                     case 1:
                         skipList.removeMin();
