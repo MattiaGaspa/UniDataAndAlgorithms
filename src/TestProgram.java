@@ -1,3 +1,4 @@
+import javax.naming.directory.SearchResult;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -106,6 +107,29 @@ class MySkipList {
     public int height() { return this.height; }
     public boolean isEmpty() { return this.size - 2 == 0; }
     public MyNode getStartPosition() { return this.startPosition; }
+
+    public void add_height() {
+        this.height++;
+        MyNode t = next(getStartPosition());
+        this.startPosition = insertAfterAbove(null, getStartPosition(), leftGuard); // Alzo la torre delle sentinelle di sinistra di 1
+        insertAfterAbove(getStartPosition(), t, rightGuard); // Alzo la torre delle sentinelle di destra di 1
+    }
+    private MyNode insertAfterAbove(MyNode p, MyNode q, MyEntry e) {
+        MyNode next, above;
+        if (p == null) {
+            next = null;
+        }
+        else { next = p.getNext(); }
+        if (q == null) {
+            above = null;
+        }
+        else { above = q.getAbove(); }
+        MyNode r = new MyNode(e, next, p, above, q);
+        if (p != null) p.setNext(r);
+        if (q != null) q.setAbove(r);
+        return r;
+    }
+
     public MyNode skipSearch(Integer key) {
         MyNode p = getStartPosition();
         while (p.getBelow() != null) {
@@ -116,7 +140,20 @@ class MySkipList {
         }
         return p;
     }
-    public int skipInsert(Integer key, String value) { // TODO Ricontrolla gli insert di insertAfterAbove quando si alza la torre di destra e sinistra. Non c'è un collegamento tra la nuova guardia di sinistra e la nuova guardia di destra
+    public SearchResult skipSearchTraversedNodes(Integer key) {
+        int traversedNodes = 1;
+        MyNode p = getStartPosition();
+        while (p.getBelow() != null) {
+            p = p.getBelow();
+            traversedNodes++;
+            while (key >= p.getNext().getElement().getKey()) {
+                p = p.getNext();
+                traversedNodes++;
+            }
+        }
+        return new SearchResult(p, traversedNodes);
+    }
+    public int skipInsert(Integer key, String value) {
         int traversedNodes = 0; // TODO Traverse nodes deve contare anche i nodi passati in skipSearch!!!!!!!!!!!
         MyNode p = skipSearch(key);
         if ((int) p.getElement().getKey() == key) {
@@ -125,18 +162,13 @@ class MySkipList {
                 traversedNodes++;
                 p = above(p);
             }
-            return traversedNodes-1; // -1 perché conterei il nodo p iniziale 2 volte.
+            return traversedNodes - 1; // -1 perché conterei il nodo p iniziale 2 volte.
         }
         MyNode q = null;
         int i = -1;
         do {
             i++;
-            if (i >= this.height) {
-                this.height++;
-                MyNode t = next(getStartPosition());
-                this.startPosition = insertAfterAbove(null, getStartPosition(), leftGuard); // Alzo la torre delle sentinelle di sinistra di 1
-                insertAfterAbove(getStartPosition(), t, rightGuard); // Alzo la torre delle sentinelle di destra di 1
-            }
+            if (i >= this.height) { add_height(); }
             q = insertAfterAbove(p, q, new MyEntry(key, value));
             while (above(p) == null) {
                 p = prev(p);
@@ -145,12 +177,6 @@ class MySkipList {
         } while (coinFlip() == 1);
         this.size++;
         return traversedNodes;
-    }
-    private MyNode insertAfterAbove(MyNode p, MyNode q, MyEntry e) { // TODO p o q == null cosa faccio con i next e gli above????
-        MyNode r = new MyNode(e, p.getNext(), p, q.getAbove(), q);
-        p.setNext(r);
-        q.setAbove(r);
-        return r;
     }
     public MyEntry remove(Integer key) {
         MyNode p = skipSearch(key);
@@ -168,6 +194,17 @@ class MySkipList {
     public MyNode prev(MyNode p) { return p.getPrev(); }
     public MyNode above(MyNode p) { return p.getAbove(); }
     public MyNode below(MyNode p) { return p.getBelow(); }
+
+    static public class SearchResult {
+        final private MyNode p;
+        final private int traversedNodes;
+        public SearchResult(MyNode p, int traversedNodes) {
+            this.p = p;
+            this.traversedNodes = traversedNodes;
+        }
+        public MyNode getP() { return this.p; }
+        public int getTraversedNodes() { return this.traversedNodes; }
+    }
 }
 
 //Class SkipListPQ
@@ -214,6 +251,33 @@ class SkipListPQ {
 
     public void print() {
         // TO BE COMPLETED
+    }
+
+    public int skipInsert(Integer key, String value) {
+        MySkipList.SearchResult searchResult = skipList.skipSearchTraversedNodes(key);
+        int traversedNodes = searchResult.getTraversedNodes();
+        MyNode p = searchResult.getP();
+        if ((int) p.getElement().getKey() == key) {
+            while (p == null) {
+                p = new MyNode(key, value, skipList.next(p), skipList.prev(p), skipList.above(p), skipList.below(p));
+                traversedNodes++;
+                p = skipList.above(p);
+            }
+            return traversedNodes - 1; // -1 perché conterei il nodo p iniziale 2 volte.
+        }
+        MyNode q = null;
+        int i = -1;
+        do {
+            i++;
+            if (i >= this.height) { add_height(); }
+            q = insertAfterAbove(p, q, new MyEntry(key, value));
+            while (above(p) == null) {
+                p = prev(p);
+            }
+            p = above(p);
+        } while (coinFlip() == 1);
+        this.size++;
+        return traversedNodes;
     }
 }
 //TestProgram
