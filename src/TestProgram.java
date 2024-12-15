@@ -30,13 +30,6 @@ class MyNode {
     private MyNode prev;
     private MyNode above;
     private MyNode below;
-    public MyNode(Integer key, String value) {
-        setElement(new MyEntry(key, value));
-        setNext(null);
-        setPrev(null);
-        setAbove(null);
-        setBelow(null);
-    }
     public MyNode(MyEntry entry) {
         setElement(entry);
         setNext(null);
@@ -46,13 +39,6 @@ class MyNode {
     }
     public MyNode(MyEntry entry, MyNode next, MyNode prev, MyNode above, MyNode below) {
         setElement(entry);
-        setNext(next);
-        setPrev(prev);
-        setAbove(above);
-        setBelow(below);
-    }
-    public MyNode(Integer key, String value, MyNode next, MyNode prev, MyNode above, MyNode below) {
-        setElement(new MyEntry(key, value));
         setNext(next);
         setPrev(prev);
         setAbove(above);
@@ -90,21 +76,16 @@ class MySkipList {
     final static private MyEntry leftGuard = new MyEntry(Integer.MIN_VALUE, "leftGuard");
     final static private MyEntry rightGuard = new MyEntry(Integer.MAX_VALUE, "rightGuard");
     private MyNode startPosition;
-    private int size;
     private int height;
-    private int coinFlip() {
-        return new Random().nextInt(2);
-    }
     public MySkipList() {
         MyNode leftSentinel = new MyNode(leftGuard);
         MyNode rightSentinel = new MyNode(rightGuard);
         leftSentinel.setNext(rightSentinel);
         rightSentinel.setPrev(leftSentinel);
         this.startPosition = leftSentinel;
+        add_height();
     }
-    public int size() { return this.size; }
     public int height() { return this.height; }
-    public boolean isEmpty() { return this.size - 2 == 0; }
     public MyNode getStartPosition() { return this.startPosition; }
 
     public void add_height() {
@@ -112,6 +93,18 @@ class MySkipList {
         MyNode t = next(getStartPosition());
         this.startPosition = insertAfterAbove(null, getStartPosition(), leftGuard); // Alzo la torre delle sentinelle di sinistra di 1
         insertAfterAbove(getStartPosition(), t, rightGuard); // Alzo la torre delle sentinelle di destra di 1
+    }
+    public void remove_height() {
+        if (height() == 1) {
+            return;
+        }
+        this.startPosition = below(getStartPosition());
+        MyNode t = getStartPosition();
+        while (t.getNext() != null) {
+            t.setAbove(null);
+            t = next(t);
+        }
+        this.height--;
     }
     public MyNode insertAfterAbove(MyNode p, MyNode q, MyEntry e) {
         MyNode next, above;
@@ -152,40 +145,22 @@ class MySkipList {
         }
         return new SearchResult(p, traversedNodes);
     }
-    public int skipInsert(Integer key, String value) {
-        int traversedNodes = 0; // TODO Traverse nodes deve contare anche i nodi passati in skipSearch!!!!!!!!!!!
-        MyNode p = skipSearch(key);
-        if ((int) p.getElement().getKey() == key) {
-            while (p == null) {
-                p = new MyNode(key, value, next(p), prev(p), above(p), below(p));
-                traversedNodes++;
-                p = above(p);
-            }
-            return traversedNodes - 1; // -1 perché conterei il nodo p iniziale 2 volte.
-        }
-        MyNode q = null;
-        int i = -1;
-        do {
-            i++;
-            if (i >= this.height) { add_height(); }
-            q = insertAfterAbove(p, q, new MyEntry(key, value));
-            while (above(p) == null) {
-                p = prev(p);
-            }
-            p = above(p);
-        } while (coinFlip() == 1);
-        this.size++;
-        return traversedNodes;
-    }
     public MyEntry remove(Integer key) {
         MyNode p = skipSearch(key);
         if ((int) p.getElement().getKey() != key) {
             return null;
         }
         MyEntry e = p.getElement();
-        while (p == null) {
+        int towerHeight = 0;
+        while (p != null) {
             prev(p).setNext(next(p));
             p = above(p);
+            towerHeight++;
+        }
+        if (towerHeight == height()-1) {
+            while (getStartPosition().getBelow().getNext().getElement() == rightGuard && height() > 1) {
+                remove_height();
+            }
         }
         return e;
     }
@@ -208,9 +183,9 @@ class MySkipList {
 
 //Class SkipListPQ
 class SkipListPQ {
-    private double alpha;
-    private Random rand;
-    private MySkipList skipList;
+    private final double alpha;
+    private final Random rand;
+    private final MySkipList skipList;
     private int size = 0;
 
     public SkipListPQ(double alpha) {
@@ -219,45 +194,50 @@ class SkipListPQ {
         this.skipList = new MySkipList();
     }
 
+    public boolean isEmpty() { return this.size == 0; }
     public int size() { return this.size; }
 
     public MyEntry min() {
-        return minNode().getElement();
+        MyNode p = minNode();
+        if (p == null) {
+            return null;
+        }
+        else {
+            return p.getElement();
+        }
     }
     private MyNode minNode() {
         MyNode p = skipList.getStartPosition();
-        while ((p.getNext() != null) && (p.getBelow() != null)) {
+        while (p.getBelow() != null) {
             p = p.getBelow();
         }
-        return p.getNext();
+        if (p.getNext().getElement().getValue().equals("rightGuard")) {
+            return null;
+        }
+        else {
+            return p.getNext();
+        }
     }
 
     public int insert(int key, String value) {
         MySkipList.SearchResult searchResult = skipList.skipSearchTraversedNodes(key);
         int traversedNodes = searchResult.getTraversedNodes();
         MyNode p = searchResult.getP();
-        /*
-        if ((int) p.getElement().getKey() == key) {
-            while (p == null) {
-                p = new MyNode(key, value, skipList.next(p), skipList.prev(p), skipList.above(p), skipList.below(p));
-                traversedNodes++;
-                p = skipList.above(p);
-            }
-            return traversedNodes - 1; // -1 perché conterei il nodo p iniziale 2 volte.
-        }
-        */
 
         MyNode q = null;
-        int level = generateEll(this.alpha, key);
+        int level = generateEll(alpha, key);
+        System.out.println("Inserendo " + value + " con livello: " + level);
+        while (level >= skipList.height()) {
+            skipList.add_height();
+        }
         for (int i = 0; i <= level; i++) {
-            if (i >= skipList.height()) { skipList.add_height(); }
             q = skipList.insertAfterAbove(p, q, new MyEntry(key, value));
             while (skipList.above(p) == null) {
                 p = skipList.prev(p);
             }
             p = skipList.above(p);
         }
-        this.size++;
+        size++;
         return traversedNodes - 1;
     }
 
@@ -280,27 +260,25 @@ class SkipListPQ {
     public MyEntry removeMin() {
         MyEntry e = min();
         skipList.remove(e.getKey());
+        this.size--;
         return e;
     }
 
     public void print() {
-        String output = "";
-        MyNode p = skipList.getStartPosition();
-        while (p.getBelow() != null) {
-            p = p.getBelow();
-        }
-        while (!p.getNext().getElement().getValue().equals("rightGuard")) {
-            p = p.getNext();
-            output += p.getElement().toString();
+        StringBuilder output = new StringBuilder();
+        MyNode p = minNode();
+        for(int i = 0; i < size(); i++) {
+            output.append(p.getElement().toString());
             MyNode q = p;
-            int i = 1;
+            int j = 1;
             while (q.getAbove() != null) {
                 q = q.getAbove();
-                i++;
+                j++;
             }
-            output += " " + i + ", ";
+            output.append(" ").append(j).append(", ");
+            p = p.getNext();
         }
-        output += "\b\b";
+        output.append("\b\b");
         System.out.println(output);
     }
 }
