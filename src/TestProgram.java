@@ -314,6 +314,7 @@ public class TestProgram {
                     case 2:
                         totalTraversed += skipList.insert(Integer.parseInt(line[1]), line[2]);
                         inserted++;
+                        break;
                     case 3:
                         skipList.print();
                         break;
