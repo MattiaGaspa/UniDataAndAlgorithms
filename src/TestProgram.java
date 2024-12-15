@@ -242,7 +242,7 @@ class SkipListPQ {
             p = skipList.above(p);
         }
         size++;
-        return traversedNodes - 1;
+        return traversedNodes;
     }
 
     private int generateEll(double alpha_ , int key) {
