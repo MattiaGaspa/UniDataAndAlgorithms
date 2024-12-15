@@ -323,7 +323,7 @@ public class TestProgram {
                         return;
                 }
             }
-            double averageTraversed = (double) totalTraversed / inserted;
+            double averageTraversed = (double) totalTraversed / (double) inserted;
             System.out.println(alpha + " " + skipList.size() + " " + inserted + " " + averageTraversed);
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
