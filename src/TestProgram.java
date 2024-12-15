@@ -5,8 +5,8 @@ import java.util.*;
 
 //Class my entry
 class MyEntry {
-    private final Integer key;
-    private final String value;
+    private Integer key;
+    private String value;
     public MyEntry(Integer key, String value) {
         this.key = key;
         this.value = value;
@@ -187,8 +187,8 @@ class MySkipList {
 
 //Class SkipListPQ
 class SkipListPQ {
-    private final double alpha;
-    private final Random rand;
+    private double alpha;
+    private Random rand;
     private final MySkipList skipList;
     private int size = 0;
 
@@ -252,7 +252,7 @@ class SkipListPQ {
                 level += 1;
             }
         }
-        else {
+        else{
             while (key != 0 && key % 2 == 0){
                 key = key / 2;
                 level += 1;
