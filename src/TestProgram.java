@@ -30,6 +30,7 @@ class MyNode {
     private MyNode prev;
     private MyNode above;
     private MyNode below;
+    private int level;
     public MyNode(MyEntry entry) {
         setElement(entry);
         setNext(null);
@@ -64,6 +65,8 @@ class MyNode {
     public void setBelow(MyNode node) {
         this.below = node;
     }
+    public int getLevel() { return this.level; }
+    public void setLevel(int level) { this.level = level; }
     @Override
     public String toString() {
         return getElement() + ". Next: " + getNext() + ", prev: " + getPrev() + "above: " + getAbove() + ", below: " + getBelow();
@@ -91,8 +94,8 @@ class MySkipList {
     public void add_height() {
         this.height++;
         MyNode t = next(getStartPosition());
-        this.startPosition = insertAfterAbove(null, getStartPosition(), leftGuard); // Alzo la torre delle sentinelle di sinistra di 1
-        insertAfterAbove(getStartPosition(), t, rightGuard); // Alzo la torre delle sentinelle di destra di 1
+        this.startPosition = insertAfterAbove(null, getStartPosition(), leftGuard, 0);
+        insertAfterAbove(getStartPosition(), t, rightGuard, 0);
     }
     public void remove_height() {
         if (height() == 1) {
@@ -106,7 +109,7 @@ class MySkipList {
         }
         this.height--;
     }
-    public MyNode insertAfterAbove(MyNode p, MyNode q, MyEntry e) {
+    public MyNode insertAfterAbove(MyNode p, MyNode q, MyEntry e, int level) {
         MyNode next, above;
         if (p == null) {
             next = null;
@@ -117,6 +120,7 @@ class MySkipList {
         }
         else { above = q.getAbove(); }
         MyNode r = new MyNode(e, next, p, above, q);
+        r.setLevel(level);
         if (p != null) p.setNext(r);
         if (q != null) q.setAbove(r);
         return r;
@@ -226,12 +230,12 @@ class SkipListPQ {
 
         MyNode q = null;
         int level = generateEll(alpha, key);
-        System.out.println("Inserendo " + value + " con livello: " + level);
+        System.out.println("Inserendo " + value + " con generateEll(alpha, key) che ritorna: " + level);
         while (level >= skipList.height()) {
             skipList.add_height();
         }
         for (int i = 0; i <= level; i++) {
-            q = skipList.insertAfterAbove(p, q, new MyEntry(key, value));
+            q = skipList.insertAfterAbove(p, q, new MyEntry(key, value), level+1);
             while (skipList.above(p) == null) {
                 p = skipList.prev(p);
             }
@@ -269,13 +273,13 @@ class SkipListPQ {
         MyNode p = minNode();
         for(int i = 0; i < size(); i++) {
             output.append(p.getElement().toString());
-            MyNode q = p;
+            /*MyNode q = p;
             int j = 1;
             while (q.getAbove() != null) {
                 q = q.getAbove();
                 j++;
-            }
-            output.append(" ").append(j).append(", ");
+            }*/
+            output.append(" ").append(p.getLevel()).append(", ");// j).append(", ");
             p = p.getNext();
         }
         output.append("\b\b");
