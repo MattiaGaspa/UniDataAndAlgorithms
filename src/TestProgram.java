@@ -86,6 +86,7 @@ class MySkipList {
         leftSentinel.setNext(rightSentinel);
         rightSentinel.setPrev(leftSentinel);
         this.startPosition = leftSentinel;
+        this.height = 1;
         add_height();
     }
     public int height() { return this.height; }
@@ -230,8 +231,7 @@ class SkipListPQ {
 
         MyNode q = null;
         int level = generateEll(alpha, key);
-        System.out.println("Inserendo " + value + " con generateEll(alpha, key) che ritorna: " + level);
-        while (level >= skipList.height()) {
+        while (level+1 >= skipList.height()) {
             skipList.add_height();
         }
         for (int i = 0; i <= level; i++) {
@@ -273,13 +273,7 @@ class SkipListPQ {
         MyNode p = minNode();
         for(int i = 0; i < size(); i++) {
             output.append(p.getElement().toString());
-            /*MyNode q = p;
-            int j = 1;
-            while (q.getAbove() != null) {
-                q = q.getAbove();
-                j++;
-            }*/
-            output.append(" ").append(p.getLevel()).append(", ");// j).append(", ");
+            output.append(" ").append(p.getLevel()).append(", ");
             p = p.getNext();
         }
         output.append("\b\b");
