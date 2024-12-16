@@ -124,6 +124,8 @@ class MySkipList {
         r.setLevel(level);
         if (p != null) p.setNext(r);
         if (q != null) q.setAbove(r);
+        if (next != null) next.setPrev(r);
+        if (above != null) above.setBelow(r);
         return r;
     }
 
