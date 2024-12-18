@@ -7,7 +7,7 @@ import java.util.*;
 class MyEntry {
     private Integer key;
     private String value;
-    public MyEntry(Integer key, String value) {
+    public MyEntry(int key, String value) {
         this.key = key;
         this.value = value;
     }
