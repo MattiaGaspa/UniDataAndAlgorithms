@@ -45,6 +45,12 @@ class MyNode {
         setAbove(above);
         setBelow(below);
     }
+    public void reset() {
+        setNext(null);
+        setPrev(null);
+        setAbove(null);
+        setBelow(null);
+    }
     public MyEntry getElement() { return this.element; }
     public void setElement(MyEntry element) {
         this.element = element;
@@ -71,7 +77,6 @@ class MyNode {
     public String toString() {
         return getElement() + ". Next: " + getNext() + ", prev: " + getPrev() + "above: " + getAbove() + ", below: " + getBelow();
     }
-
 }
 
 // Class my skip list
@@ -99,12 +104,13 @@ class MySkipList {
         insertAfterAbove(getStartPosition(), t, rightGuard, 0);
     }
     public void remove_height() {
-        if (height() == 1) {
+        if (height() == 2) {
             return;
         }
         this.startPosition = below(getStartPosition());
         MyNode t = getStartPosition();
         while (t.getNext() != null) {
+            t.getAbove().reset();
             t.setAbove(null);
             t = next(t);
         }
@@ -158,14 +164,17 @@ class MySkipList {
             return null;
         }
         MyEntry e = p.getElement();
-        int towerHeight = 0;
+        int level = p.getLevel();
         while (p != null) {
             prev(p).setNext(next(p));
-            p = above(p);
-            towerHeight++;
+            next(p).setPrev(prev(p));
+            MyNode q = above(p);
+            p.reset();
+            p = q;
         }
-        if (towerHeight == height()-1) {
-            while (getStartPosition().getBelow().getNext().getElement() == rightGuard && height() > 1) {
+        ////////// System.out.println("Tower height: " + level + ", list height: " + height());
+        if (level == height()-1) {
+            while (getStartPosition().getBelow().getNext().getElement() == rightGuard && height() > 2) {
                 remove_height();
             }
         }
@@ -264,6 +273,9 @@ class SkipListPQ {
     }
 
     public MyEntry removeMin() {
+        if (isEmpty()) {
+            return null;
+        }
         MyEntry e = min();
         skipList.remove(e.getKey());
         this.size--;
