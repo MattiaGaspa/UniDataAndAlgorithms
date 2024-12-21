@@ -275,10 +275,10 @@ class SkipListPQ {
         MyNode p = minNode();
         for(int i = 0; i < size(); i++) {
             output.append(p.getElement().toString());
-            output.append(" ").append(p.getLevel()).append(", ");
+            output.append(" ").append(p.getLevel());
+            if (!p.getNext().getElement().getValue().equals("rightGuard")) output.append(", ");
             p = p.getNext();
         }
-        output.append("\b\b");
         System.out.println(output);
     }
 }
