@@ -172,7 +172,6 @@ class MySkipList {
             p.reset();
             p = q;
         }
-        ////////// System.out.println("Tower height: " + level + ", list height: " + height());
         if (level == height()-1) {
             while (getStartPosition().getBelow().getNext().getElement() == rightGuard && height() > 2) {
                 remove_height();
