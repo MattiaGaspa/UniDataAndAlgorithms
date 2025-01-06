@@ -52,25 +52,15 @@ class MyNode {
         setBelow(null);
     }
     public MyEntry getElement() { return this.element; }
-    public void setElement(MyEntry element) {
-        this.element = element;
-    }
+    public void setElement(MyEntry element) { this.element = element; }
     public MyNode getNext() { return this.next; }
     public MyNode getPrev() { return this.prev; }
     public MyNode getAbove() { return this.above; }
     public MyNode getBelow() { return this.below; }
-    public void setNext(MyNode node) {
-        this.next = node;
-    }
-    public void setPrev(MyNode node) {
-        this.prev = node;
-    }
-    public void setAbove(MyNode node) {
-        this.above = node;
-    }
-    public void setBelow(MyNode node) {
-        this.below = node;
-    }
+    public void setNext(MyNode node) { this.next = node; }
+    public void setPrev(MyNode node) { this.prev = node; }
+    public void setAbove(MyNode node) { this.above = node; }
+    public void setBelow(MyNode node) { this.below = node; }
     public int getLevel() { return this.level; }
     public void setLevel(int level) { this.level = level; }
     @Override
@@ -212,6 +202,13 @@ class SkipListPQ {
     public boolean isEmpty() { return this.size == 0; }
     public int size() { return this.size; }
 
+    private boolean isLeftGuard(MyNode p) {
+        return p.getElement().getValue().equals("leftGuard") && p.getElement().getKey() == Integer.MIN_VALUE;
+    }
+    private boolean isRightGuard(MyNode p) {
+        return p.getElement().getValue().equals("rightGuard") && p.getElement().getKey() == Integer.MAX_VALUE;
+    }
+
     public MyEntry min() {
         MyNode p = minNode();
         if (p == null) {
@@ -226,7 +223,7 @@ class SkipListPQ {
         while (p.getBelow() != null) {
             p = p.getBelow();
         }
-        if (p.getNext().getElement().getValue().equals("rightGuard")) {
+        if (isRightGuard(p.getNext())) {
             return null;
         }
         else {
@@ -287,7 +284,7 @@ class SkipListPQ {
         for(int i = 0; i < size(); i++) {
             output.append(p.getElement().toString());
             output.append(" ").append(p.getLevel());
-            if (!p.getNext().getElement().getValue().equals("rightGuard")) output.append(", ");
+            if (!isRightGuard(p.getNext())) output.append(", ");
             p = p.getNext();
         }
         System.out.println(output);
