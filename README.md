@@ -1,2 +1,2 @@
 # UniDataAndAlgorithms
-Raccolta di classi utilizzata per il corso di Dati e Algoritmi
+Programma sviluppato per il progetto finale del corso di Dati e Algoritmi
